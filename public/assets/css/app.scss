@@ -1,0 +1,155 @@
+html,
+head,
+body,
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+$primary-color: rgba(6, 64, 114, 1);
+$primary-color-text: rgba(255, 255, 255, 1);
+
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+  color: #000e16;
+  line-height: 1.5;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
+  font-weight: normal;
+}
+
+%link {
+  color: $primary-color;
+  text-decoration: none;
+}
+
+%btn {
+  background-color: $primary-color-text;
+  border-color: $primary-color;
+  border-width: 2px 2px 2px 2px;
+  padding: 10px;
+}
+
+a {
+  @extend %link;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:focus {
+  text-decoration: underline;
+}
+
+a.special-button:hover {
+  text-decoration: none;
+}
+a.special-button:focus {
+  text-decoration: none;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rem;
+  padding: 1rem 10rem;
+  justify-content: center;
+}
+
+ul.nav {
+  list-style-type: none;
+  margin: 0px;
+  padding: 1rem 0px;
+  display: flex;
+  flex-flow: row wrap;
+  gap: 20px;
+  border-bottom: 2px solid #000;
+  justify-content: center;
+}
+
+.main {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 0rem;
+}
+
+.container {
+  text-align: center;
+}
+
+.footer {
+  text-align: center;
+  padding: 5px;
+  border-top: 2px solid black;
+}
+
+.btnJoin {
+  @extend %btn;
+  border-style: solid;
+  font-size: inherit;
+  color: inherit;
+  font-family: inherit;
+  line-height: 1;
+  font-weight: inherit;
+  font-style: inherit;
+  border-radius: 15px;
+}
+
+.btnJoin:hover {
+  background-color: $primary-color;
+  color: $primary-color-text;
+  transform: translate3d(3px, 3px, 0px);
+  text-decoration: none;
+}
+
+%container-page {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home {
+  @extend %container-page;
+  padding: 1rem 0rem;
+  .logo {
+    max-width: 25rem;
+    padding: 1rem 6rem;
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  .info {
+    max-width: 25rem;
+    padding: 5rem 2rem;
+  }
+}
+
+.member {
+  @extend %container-page;
+  .card {
+    border: 2px solid $primary-color;
+    margin: 5px;
+    text-align: center;
+    border-radius: 15px;
+    overflow: hidden;
+    img {
+      border-radius: 10px 10px 0px 0px;
+    }
+  }
+}
+
+.repo {
+  @extend %container-page;
+  gap: 25px;
+}
