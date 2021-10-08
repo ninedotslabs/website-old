@@ -1,5 +1,6 @@
 module Page.Repos exposing (Entries(..), Model, Msg(..), Repo, Repos, getRepos, init, renderRepo, repoDecoder, reposDecoder, update, view)
 
+import Components.Logo exposing (spinner)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -56,7 +57,7 @@ reposDecoder =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { title = "Members", entries = Loading }, getRepos apiGHOrgRepos )
+    ( { title = "Repos", entries = Loading }, getRepos apiGHOrgRepos )
 
 
 
@@ -70,12 +71,27 @@ update msg model =
             ( { model | entries = Loading }, getRepos apiGHOrgRepos )
 
         GotRepos result ->
-            case result of
-                Ok repos ->
-                    ( { model | entries = Success repos }, Cmd.none )
+            result
+                |> Result.map (\repos -> ( { model | entries = Success repos }, Cmd.none ))
+                |> Result.withDefault ( { model | entries = Failure }, Cmd.none )
 
-                Err _ ->
-                    ( { model | entries = Failure }, Cmd.none )
+
+styleRepos : List (Attribute msg)
+styleRepos =
+    [ style "margin" "3rem 0px 10px 0px"
+    , style "border" "2px solid black"
+    , style "color" "#fff"
+    ]
+
+
+styleRepoButton : List (Attribute msg)
+styleRepoButton =
+    [ style "margin" "10px 5px"
+    , style "border" "2px solid #589bd5"
+    , style "padding" "10px"
+    , style "border-radius" "15px"
+    , style "cursor" "pointer"
+    ]
 
 
 
@@ -91,15 +107,9 @@ view model =
             , attrs = []
             , children =
                 [ div [ style "text-align" "center" ]
-                    [ p [ style "margin" "3rem 0px 10px 0px" ] [ text "Error loading repos." ]
+                    [ p (style "background-color" "#000" :: styleRepos) [ text "Error loading repos." ]
                     , button
-                        [ onClick Reload
-                        , style "margin" "10px 5px"
-                        , style "border" "2px solid #589bd5"
-                        , style "padding" "10px"
-                        , style "border-radius" "15px"
-                        , style "cursor" "pointer"
-                        ]
+                        (onClick Reload :: styleRepoButton)
                         [ text "Try Again!" ]
                     ]
                 ]
@@ -111,7 +121,7 @@ view model =
             , attrs = []
             , children =
                 [ div [ style "text-align" "center" ]
-                    [ p [ style "margin" "3rem 0px 10px 0px" ] [ text "Loading repos..." ] ]
+                    [ p [ style "margin" "3rem 0px 10px 0px" ] [ spinner ] ]
                 ]
             }
 
@@ -125,7 +135,7 @@ view model =
                     [ h2 [] [ text "Repositori" ]
                     , div
                         [ class "repo" ]
-                        (List.map renderRepo repos)
+                        (repos |> List.map renderRepo)
                     ]
                 ]
             }
@@ -151,13 +161,7 @@ renderRepo repo =
             [ h2 [] [ text repo.name ] ]
         , p []
             [ text
-                (case repo.description of
-                    Just a ->
-                        a
-
-                    Nothing ->
-                        ""
-                )
+                (Maybe.withDefault "no description." repo.description)
             ]
         ]
 

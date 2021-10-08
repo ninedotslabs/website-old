@@ -13,7 +13,7 @@ view =
     , children =
         [ div [ class "container" ]
             [ h1 [] [ text "Tentang" ]
-            , p [] [ text "Kami gabisa ngoding." ]
+            , p [] [ text "Perkumpulan mahasiswa pegiat ", a [ href "/todos" ] [ text "pemrograman." ] ]
             ]
         ]
     }

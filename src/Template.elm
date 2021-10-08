@@ -1,7 +1,6 @@
 module Template exposing
     ( Meta
     , Segment
-    , logo
     , view
     )
 
@@ -9,8 +8,6 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Lazy exposing (..)
-import Svg exposing (circle, g, svg)
-import Svg.Attributes exposing (cx, cy, fill, r, viewBox)
 
 
 type alias Meta msg =
@@ -71,9 +68,7 @@ viewHeader segments =
 
 viewNavigation : Html msg
 viewNavigation =
-    ul
-        [ class "nav"
-        ]
+    ul [ class "nav" ]
         [ viewLink { name = "Home", url = "/" }
         , viewLink { name = "Anggota", url = "/members" }
         , viewLink { name = "Repositori", url = "/repos" }
@@ -83,12 +78,7 @@ viewNavigation =
 viewLink : Path -> Html msg
 viewLink path =
     li []
-        [ a
-            [ href path.url
-            , style "text-decoration" "none"
-            ]
-            [ text path.name ]
-        ]
+        [ a [ href path.url ] [ text path.name ] ]
 
 
 slash : Html msg
@@ -114,31 +104,5 @@ viewFooter : Html msg
 viewFooter =
     footer
         [ class "footer" ]
-        [ p [] [ text "© 2020-2021 Nine Dots Labs" ]
-        ]
-
-
-logo : Html.Html msg
-logo =
-    svg [ width 300, height 350, viewBox "0 -50 210 250" ]
-        [ g [ fill "#589bd5" ]
-            [ circle [ cx "104.9", cy "120.97", r "7.9472" ]
-                []
-            , circle [ cx "104.9", cy "57.986", r "7.9472" ]
-                []
-            , circle [ cx "136.39", cy "89.479", r "7.9472" ]
-                []
-            , circle [ cx "41.916", cy "89.479", r "7.9472" ]
-                []
-            , circle [ cx "167.89", cy "89.479", r "7.9472" ]
-                []
-            , circle [ cx "73.409", cy "89.479", r "7.9472" ]
-                []
-            , circle [ cx "104.9", cy "26.494", r "7.9472" ]
-                []
-            , circle [ cx "136.39", cy "57.986", r "7.9472" ]
-                []
-            , circle [ cx "73.409", cy "57.986", r "7.9472" ]
-                []
-            ]
+        [ p [] [ text "© 2020-Future Nine Dots Labs" ]
         ]

@@ -3,8 +3,24 @@
 
 set -e
 
-rm -rf dist
+## DOWNLOAD DEPS
 
+PATH=$(pwd)/node_modules/.bin:$PATH
+
+if ! [ -x "$(command -v elm)" ]; then
+  npm install elm
+fi
+if ! [ -x "$(command -v uglifyjs)" ]; then
+  npm install uglify-js
+fi
+if ! [ -x "$(command -v sass)" ]; then
+  npm install sass 
+fi
+if ! [ -x "$(command -v html-minifier)" ]; then
+  npm install html-minifier 
+fi
+
+rm -rf dist
 
 cp -r public/ dist/
 

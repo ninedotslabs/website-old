@@ -8,6 +8,7 @@ import Page.Error as Error
 import Page.Home as Home
 import Page.Members as Members
 import Page.Repos as Repos
+import Page.Todos as Todos
 import Template
 import Url
 import Url.Parser exposing ((</>), (<?>), Parser, oneOf, s, top)
@@ -19,12 +20,21 @@ type Page
     | NotFound
     | Members Members.Model
     | Repos Repos.Model
+    | Todos Todos.Model
 
 
 type alias Model =
     { key : Nav.Key
     , page : Page
     }
+
+
+type Msg
+    = UrlRequested Browser.UrlRequest
+    | UrlChanged Url.Url
+    | MembersMsg Members.Msg
+    | ReposMsg Repos.Msg
+    | TodosMsg Todos.Msg
 
 
 main : Program () Model Msg
@@ -41,26 +51,15 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    load url
+    route url
         { key = key
         , page = NotFound
         }
 
 
-type Msg
-    = Msg1
-    | UrlRequested Browser.UrlRequest
-    | UrlChanged Url.Url
-    | MembersMsg Members.Msg
-    | ReposMsg Repos.Msg
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        Msg1 ->
-            ( model, Cmd.none )
-
         UrlRequested urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -70,7 +69,7 @@ update message model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            load url model
+            route url model
 
         MembersMsg msg ->
             case model.page of
@@ -84,6 +83,14 @@ update message model =
             case model.page of
                 Repos repos ->
                     loadRepos model (Repos.update msg repos)
+
+                _ ->
+                    ( model, Cmd.none )
+
+        TodosMsg msg ->
+            case model.page of
+                Todos todos ->
+                    loadTodos model (Todos.update msg todos)
 
                 _ ->
                     ( model, Cmd.none )
@@ -115,32 +122,23 @@ view model =
             Template.view MembersMsg (Members.view members)
 
         Repos repos ->
-            Template.view ReposMsg (Repos.view repos)
+            Repos.view repos |> Template.view ReposMsg
 
-
-
-{- title = "Hello World"
-   , body =
-       [ h1 []
-           [ text "Hello World" ]
-       , text "The current URL is: "
-       , b [] [ text (Url.toString model.url) ]
-       , ul []
-           [ viewLink "/home"
-           , viewLink "/profile"
-           , viewLink "/reviews/the-century-of-the-self"
-           , viewLink "/reviews/public-opinion"
-           , viewLink "/reviews/shah-of-shahs"
-           ]
-       ]
-   }
--}
+        Todos todos ->
+            Todos.view todos |> Template.view TodosMsg
 
 
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     ( { model | page = Home }
     , Cmd.none
+    )
+
+
+loadTodos : Model -> ( Todos.Model, Cmd Todos.Msg ) -> ( Model, Cmd Msg )
+loadTodos model ( todos, cmds ) =
+    ( { model | page = Todos todos }
+    , Cmd.map TodosMsg cmds
     )
 
 
@@ -176,16 +174,16 @@ routeParser model =
             (loadMembers model (Members.init ()))
         , path (s "repos")
             (loadRepos model (Repos.init ()))
+        , path (s "todos")
+            (loadTodos model (Todos.init ()))
         ]
 
 
-load : Url.Url -> Model -> ( Model, Cmd Msg )
-load url model =
-    case Url.Parser.parse (routeParser model) url of
-        Just router ->
-            router
-
-        Nothing ->
+route : Url.Url -> Model -> ( Model, Cmd Msg )
+route url model =
+    Url.Parser.parse (routeParser model) url
+        |> Maybe.map (\a -> a)
+        |> Maybe.withDefault
             ( { model | page = NotFound }
             , Cmd.none
             )

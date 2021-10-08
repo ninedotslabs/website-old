@@ -1,3 +1,5 @@
+@use "./toasty.scss";
+
 html,
 head,
 body,
@@ -152,4 +154,109 @@ ul.nav {
 .repo {
   @extend %container-page;
   gap: 25px;
+}
+
+.todos {
+  width: 30rem;
+  max-width: 30rem;
+  height: 30rem;
+  max-height: 30rem;
+  margin: 1rem 0px;
+  overflow: auto;
+  border: 2px solid $primary-color;
+  ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    li.todoItem {
+      width: 100%;
+      border-bottom: 2px solid $primary-color;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      padding: 15px;
+      h3 {
+        background-color: $primary-color-text;
+        margin: 10px 0px;
+      }
+    }
+  }
+}
+
+%form-item {
+  padding: 15px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.form {
+  margin: 1rem 0px;
+  width: 30rem;
+  form {
+    display: flex;
+    flex-direction: column;
+    max-height: 10rem;
+    margin: 10px 0px;
+    text-align: center;
+    div {
+      input.todo {
+        @extend %form-item;
+        width: 80%;
+        border-bottom: 2px solid $primary-color;
+      }
+      button:hover {
+        background-color: $primary-color;
+        color: $primary-color-text;
+      }
+    }
+  }
+}
+
+.todoInfo {
+  border: none;
+  margin: 0px 15px;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  font-size: inherit;
+}
+
+.noTodoItem {
+  padding: 207px 0px;
+}
+
+.news {
+ display: flex;
+ flex-direction: row;
+ flex-wrap: wrap;
+ gap: 30px;
+ justify-content: center;
+}
+
+.news-item {
+ display: flex;
+ flex-direction: column;
+ gap: 15px;
+ width: 300px;
+ height: 350px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.spinner {
+  animation: spin 0.3s linear infinite;
+}
+
+@keyframes spin {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+
 }

@@ -1,5 +1,6 @@
 module Page.Members exposing (..)
 
+import Components.Logo exposing (spinner)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -69,13 +70,10 @@ update msg model =
         Reload ->
             ( { model | entries = Loading }, getMembers apiGHOrgMembers )
 
-        GotMembers result ->
-            case result of
-                Ok members ->
-                    ( { model | entries = Success members }, Cmd.none )
-
-                Err _ ->
-                    ( { model | entries = Failure }, Cmd.none )
+        GotMembers res ->
+            res
+                |> Result.map (\members -> ( { model | entries = Success members }, Cmd.none ))
+                |> Result.withDefault ( { model | entries = Failure }, Cmd.none )
 
 
 view : Model -> Template.Meta Msg
@@ -107,7 +105,7 @@ view model =
             , attrs = []
             , children =
                 [ div [ style "text-align" "center" ]
-                    [ p [ style "margin" "3rem 0px 10px 0px" ] [ text "Loading members..." ] ]
+                    [ p [ style "margin" "3rem 0px 10px 0px" ] [ spinner ] ]
                 ]
             }
 
@@ -124,18 +122,6 @@ view model =
                     ]
                 ]
             }
-
-
-
--- VIEW
-{-
-   componentMembers : Model -> Html Msg
-   componentMembers model =
-       div [ style "padding" "10px", style "background-color" "#334455", style "color" "#fff" ]
-           [ h2 [ style "text-align" "center" ] [ text "Members" ]
-           , viewMembers model
-           ]
--}
 
 
 renderMember : Member -> Html Msg
