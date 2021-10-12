@@ -6,7 +6,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Iso8601
-import Json.Decode as JD exposing (Decoder, field, int, string)
+import Json.Decode as JD exposing (Decoder, field, int, nullable, string)
+import Json.Decode.Pipeline as JDP
 import Template exposing (..)
 import Time exposing (millisToPosix, now, toYear, utc)
 import Utils.Endpoint exposing (..)
@@ -33,11 +34,12 @@ type alias Repo =
     , updated_at : String
     , forks : Int
     , watchers : Int
+    , topics : Topics
     }
 
 
-type Topics
-    = List String
+type alias Topics =
+    List String
 
 
 type alias Repos =
@@ -55,15 +57,16 @@ type Msg
 
 repoDecoder : Decoder Repo
 repoDecoder =
-    JD.map8 Repo
-        (field "name" string)
-        (JD.maybe (field "description" string))
-        (field "html_url" string)
-        (JD.maybe (field "homepage" string))
-        (field "created_at" string)
-        (field "updated_at" string)
-        (field "forks" int)
-        (field "watchers" int)
+    JD.succeed Repo
+        |> JDP.required "name" string
+        |> JDP.required "description" (nullable string)
+        |> JDP.required "html_url" string
+        |> JDP.required "homepage" (nullable string)
+        |> JDP.required "created_at" string
+        |> JDP.required "updated_at" string
+        |> JDP.required "forks" int
+        |> JDP.required "watchers" int
+        |> JDP.required "topics" (JD.list string)
 
 
 reposDecoder : Decoder Repos
@@ -195,6 +198,7 @@ renderRepo repo =
                 (repo.created_at |> getYear)
                 ((\a -> "created_at: " ++ a) >> text)
             ]
+        , ul [] (List.map (\a -> li [] [ text a ]) repo.topics)
         , p []
             [ viewFromInt
                 (repo.updated_at |> getYear)
