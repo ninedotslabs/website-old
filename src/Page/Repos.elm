@@ -5,8 +5,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Json.Decode as JD exposing (Decoder, field, string)
+import Iso8601
+import Json.Decode as JD exposing (Decoder, field, int, string)
 import Template exposing (..)
+import Time exposing (millisToPosix, now, toYear, utc)
 import Utils.Endpoint exposing (..)
 
 
@@ -26,7 +28,16 @@ type alias Repo =
     { name : String
     , description : Maybe String
     , html_url : String
+    , homepage : Maybe String
+    , created_at : String
+    , updated_at : String
+    , forks : Int
+    , watchers : Int
     }
+
+
+type Topics
+    = List String
 
 
 type alias Repos =
@@ -44,10 +55,15 @@ type Msg
 
 repoDecoder : Decoder Repo
 repoDecoder =
-    JD.map3 Repo
+    JD.map8 Repo
         (field "name" string)
         (JD.maybe (field "description" string))
         (field "html_url" string)
+        (JD.maybe (field "homepage" string))
+        (field "created_at" string)
+        (field "updated_at" string)
+        (field "forks" int)
+        (field "watchers" int)
 
 
 reposDecoder : Decoder Repos
@@ -143,9 +159,16 @@ view model =
 
 renderRepo : Repo -> Html Msg
 renderRepo repo =
+    let
+        getYear s =
+            s
+                |> Iso8601.toTime
+                |> Result.withDefault (millisToPosix 0)
+                |> toYear utc
+    in
     div
-        [ width 150
-        , height 200
+        [ width 500
+        , height 500
         , style "border" "2px solid #fff"
         , style "margin" "5px"
         , style "text-align" "center"
@@ -163,7 +186,48 @@ renderRepo repo =
             [ text
                 (Maybe.withDefault "no description." repo.description)
             ]
+        , p []
+            [ viewFromInt repo.forks (((\a -> a ++ " fork") >> addS repo.forks) >> text) ]
+        , p []
+            [ viewFromInt repo.watchers (((\a -> a ++ " watcher") >> addS repo.forks) >> text) ]
+        , p []
+            [ viewFromInt
+                (repo.created_at |> getYear)
+                ((\a -> "created_at: " ++ a) >> text)
+            ]
+        , p []
+            [ viewFromInt
+                (repo.updated_at |> getYear)
+                ((\a -> "updated_at : " ++ a) >> text)
+            ]
+        , case repo.homepage of
+            Just hp ->
+                if hp /= "" then
+                    a [ href hp, target "_blank", rel "noopener noreferrer" ] [ text "view live" ]
+
+                else
+                    text ""
+
+            Nothing ->
+                text ""
         ]
+
+
+addS i a =
+    a
+        ++ (if i > 1 then
+                "s"
+
+            else
+                ""
+           )
+
+
+viewFromInt : Int -> (String -> Html msg) -> Html msg
+viewFromInt i f =
+    i
+        |> String.fromInt
+        |> f
 
 
 getRepos : String -> Cmd Msg
