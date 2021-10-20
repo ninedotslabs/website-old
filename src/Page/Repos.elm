@@ -170,50 +170,70 @@ renderRepo repo =
                 |> toYear utc
     in
     div
-        [ width 500
-        , height 500
-        , style "border" "2px solid #fff"
-        , style "margin" "5px"
+        [ style "margin" "5px"
         , style "text-align" "center"
         , style "border-radius" "15px"
-        , style "overflow" "hidden"
+        , style "overflow" "auto"
+        , style "border" "2px solid black"
+        , style "width" "300px"
+        , style "min-height" "450px"
         ]
-        [ a
-            [ href repo.html_url
-            , target "_blank"
-            , rel "noopener noreferrer"
-            , style "text-decoration" "none"
+        [ div [ style "border-bottom" "2px solid black", class "pl-2 pr-2" ]
+            [ a
+                [ href repo.html_url
+                , target "_blank"
+                , rel "noopener noreferrer"
+                , style "text-decoration" "none"
+                ]
+                [ h2 [] [ text repo.name ] ]
+            , p []
+                [ text
+                    (Maybe.withDefault "no description." repo.description)
+                ]
             ]
-            [ h2 [] [ text repo.name ] ]
-        , p []
-            [ text
-                (Maybe.withDefault "no description." repo.description)
-            ]
-        , p []
-            [ viewFromInt repo.forks (((\a -> a ++ " fork") >> addS repo.forks) >> text) ]
-        , p []
-            [ viewFromInt repo.watchers (((\a -> a ++ " watcher") >> addS repo.forks) >> text) ]
-        , p []
-            [ viewFromInt
-                (repo.created_at |> getYear)
-                ((\a -> "created_at: " ++ a) >> text)
-            ]
-        , ul [] (List.map (\a -> li [] [ text a ]) repo.topics)
-        , p []
-            [ viewFromInt
-                (repo.updated_at |> getYear)
-                ((\a -> "updated_at : " ++ a) >> text)
-            ]
-        , case repo.homepage of
-            Just hp ->
-                if hp /= "" then
-                    a [ href hp, target "_blank", rel "noopener noreferrer" ] [ text "view live" ]
+        , div [ class "pt-2 pb-2" ]
+            [ p []
+                [ span [ class "mr-2" ]
+                    [ i [ class "fa fa-code-fork" ] [], viewFromInt repo.forks ((\a -> " " ++ a) >> text) ]
+                , span []
+                    [ i [ class "fa fa-eye" ] [], viewFromInt repo.watchers ((\a -> " " ++ a) >> text) ]
+                ]
+            , p []
+                [ span [ class "mr-2" ]
+                    [ i [ class "fa fa-history" ] []
+                    , viewFromInt
+                        (repo.created_at |> getYear)
+                        ((\a -> " " ++ a) >> text)
+                    ]
+                , span []
+                    [ i [ class "fa fa-refresh" ] []
+                    , viewFromInt
+                        (repo.updated_at |> getYear)
+                        ((\a -> " " ++ a) >> text)
+                    ]
+                ]
+            , case repo.homepage of
+                Just hp ->
+                    if hp /= "" then
+                        a [ href hp, target "_blank", rel "noopener noreferrer" ] [ text "view homepage" ]
 
-                else
+                    else
+                        text ""
+
+                Nothing ->
                     text ""
-
-            Nothing ->
-                text ""
+            ]
+        , ul
+            [ style "list-style-type" "none"
+            , style "display" "flex"
+            , style "flex-direction" "row"
+            , style "flex-wrap" "wrap"
+            , style "margin" "0px"
+            , style "padding" "0px"
+            , style "border-top" "2px solid black"
+            , style "overflow" "auto"
+            ]
+            (List.map (\a -> li [ class "p-2" ] [ text a ]) repo.topics)
         ]
 
 

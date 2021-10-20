@@ -1,4 +1,12 @@
 @use "./toasty.scss";
+@use "./css_utility.scss";
+
+// var
+
+$primary-color: rgba(6, 64, 114, 1);
+$primary-color-text: rgba(255, 255, 255, 1);
+
+// reset
 
 html,
 head,
@@ -8,9 +16,7 @@ pre {
   padding: 0;
 }
 
-$primary-color: rgba(6, 64, 114, 1);
-$primary-color-text: rgba(255, 255, 255, 1);
-
+// components
 body {
   font-family: "IBM Plex Sans", sans-serif;
   color: #000e16;
@@ -258,5 +264,4 @@ ul.nav {
 @keyframes spin {
   from {transform: rotate(0deg);}
   to {transform: rotate(360deg);}
-
 }
