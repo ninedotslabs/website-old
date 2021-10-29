@@ -233,7 +233,7 @@ renderRepo repo =
             , style "border-top" "2px solid black"
             , style "overflow" "auto"
             ]
-            (List.map (\a -> li [ class "p-2" ] [ text a ]) repo.topics)
+            (List.reverse repo.topics |> List.map (\a -> li [ class "p-2" ] [ text a ]))
         ]
 
 
